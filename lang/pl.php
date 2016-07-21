@@ -3,6 +3,14 @@
 $lang_name = "Polskie";
 $inappropriateUse = "Wykorzystanie niedozwolony";
 
+$fileUnits = [
+		"TB" => "TB",
+		"GB" => "GB",
+		"MB" => "MB",
+		"KB" => "KB",
+		"B" => "B"
+];
+
 $imagebrowser1 = "Przeglądarka zdjęć dla CKEditor";
 $imagebrowser2 = "Razem:";
 $imagebrowser3 = "zdjęć";
@@ -66,7 +74,7 @@ $dltimageerrors6 = "Plik który chcesz usunąć, nie istnieje. Proszę spróbowa
 
 $uploadimgerrors1 = "Plik nie jest obrazem.";
 $uploadimgerrors2 = "Niestety, plik już istnieje.";
-$uploadimgerrors3 = "Niestety, plik jest za duży.";
+$uploadimgerrors3 = "Niestety, plik jest za duży. (Maksymalny = " . convertFileSize($maxUploadFileSize) . ')';
 $uploadimgerrors4 = "Niestety, tylko pliki JPG, JPEG, PNG i GIF są dozwolone.";
 $uploadimgerrors5 = "Niestety, plik nie został przesłany. Nie zapomnij ustawić CHMOD pozwolenia zapisu (0777) do folderu Ładowarki zdjęć na serwerze.";
 $uploadimgerrors6 = "Niestety, wystąpił błąd podczas przesyłania pliku -";

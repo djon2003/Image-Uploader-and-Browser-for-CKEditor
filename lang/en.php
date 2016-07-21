@@ -3,6 +3,14 @@
 $lang_name = "English";
 $inappropriateUse = "Utilisation not permitted";
 
+$fileUnits = [
+		"TB" => "TB",
+		"GB" => "GB",
+		"MB" => "MB",
+		"KB" => "KB",
+		"B" => "B"
+];
+
 $imagebrowser1 = "Image Browser for CKEditor";
 $imagebrowser2 = "In total:";
 $imagebrowser3 = "Images";
@@ -66,7 +74,7 @@ $dltimageerrors6 = "The file you want to delete does not exist. Please try again
 
 $uploadimgerrors1 = "File is not an image.";
 $uploadimgerrors2 = "Sorry, file already exists.";
-$uploadimgerrors3 = "Sorry, your file is too large.";
+$uploadimgerrors3 = "Sorry, your file is too large. (Maximum = " . convertFileSize($maxUploadFileSize) . ')';
 $uploadimgerrors4 = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
 $uploadimgerrors5 = "Sorry, your file was not uploaded. Don't forget to set CHMOD writable permission (0777) to imageuploader folder on your server.";
 $uploadimgerrors6 = "Sorry, there was an error uploading your file -";

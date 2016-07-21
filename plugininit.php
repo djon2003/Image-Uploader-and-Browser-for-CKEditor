@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__ . '/functions.php');
+
 //Coming from : http://stackoverflow.com/a/8891890/214898
 function url_origin( $s, $use_forwarded_host = false ) {
 	$ssl      = ( ! empty( $s['HTTPS'] ) && $s['HTTPS'] == 'on' );
@@ -19,26 +21,11 @@ if (!isset($_SERVER['REQUEST_URI'])) {
 
 // Don't remove the following two rows
 $root = url_origin($_SERVER);
-$link = "$root$_SERVER[REQUEST_URI]";
-
-
-// checking lang value
-if(isset($_COOKIE['sy_lang'])) {
-    $load_lang_code = $_COOKIE['sy_lang'];
-} else if (isset($_GET['langCode'])) {
-	$load_lang_code = $_GET['langCode'];
-} else {
-    $load_lang_code = "en";
-}
-
-// including lang file
-if (!file_exists(__DIR__ . "/lang/$load_lang_code.php")) {
-	$load_lang_code = "en"; //Set default language
-}
-require_once(__DIR__ . "/lang/$load_lang_code.php");
+$link = "$root/$_SERVER[REQUEST_URI]";
 
 
 $pluginConfigFile = __DIR__ . '/pluginconfig.php';
+
 //Validate pluginconfig file for old version
 $lookingLine = '$foldershistory[] = $useruploadfolder;';
 $pluginConfigFileSize = filesize($pluginConfigFile);
@@ -53,20 +40,13 @@ if ($lookingLineIndex !== false) {
 }
 fclose($fp);
 
-// including config file : Changed by user OR administrator
-require_once($pluginConfigFile);
-
-
 session_start();
 
 if(isset($_SESSION['username'])){
     
     if(isset($_POST["newpath"])){
         $newpath = filter_input(INPUT_POST, 'newpath', FILTER_SANITIZE_STRING);
-        $root = $_SERVER['DOCUMENT_ROOT'];
         $data = '
-    $useruploadfolder = "'.$newpath.'";
-    $useruploadpath = $usersiteroot."$useruploadfolder/";
     $foldershistory[] = "'.$newpath.'";
         '.PHP_EOL;
         $fp = fopen($pluginConfigFile, 'a');
@@ -185,15 +165,46 @@ if(!isset($_COOKIE["file_style"])){
     $file_style = $_COOKIE["file_style"];
 }
 
+//Overridable options
+$acceptedExtensions = ['jpg', 'png', 'svg', 'jpeg', 'gif', 'ico'];
+$maxUploadFileSize = 1048576; // 1MB
+$generateFileNameOnUpload = true;
+
 // Path to the upload folder, please set the path using the Image Browser Settings menu.
-
 $foldershistory = array();
-$useruploadroot = $root;
-$browserfolder = pathinfo("$_SERVER[REQUEST_URI]");
-$browserfolder = ltrim($browserfolder["dirname"], '/');
-$usersiteroot = substr($_SERVER["SCRIPT_FILENAME"], 0, (stripos($_SERVER["SCRIPT_FILENAME"], $_SERVER["SCRIPT_NAME"])+1));
+//This support the project being included in a website via a Symbolic link on a folder
+$rootFolder = dirname($_SERVER["SCRIPT_FILENAME"]);
+$rootFolder = str_replace("\\", "/", $rootFolder);
+$rootFolder = explode('/', $rootFolder);
+$defaultUploadFolder = $rootFolder[count($rootFolder) - 2] . "/" . $rootFolder[count($rootFolder) - 1] . '/uploads';
+$rootFolder = array_splice($rootFolder, 0, count($rootFolder) - 2);
+$rootFolder = join('/', $rootFolder);
 
-$useruploadfolder = "$browserfolder/uploads";
-$useruploadpath = $usersiteroot."$useruploadfolder/";
-$foldershistory[] = $useruploadfolder;
+//Set default relative upload dir
+$foldershistory[] = $defaultUploadFolder;
 
+
+// including config file : Changed by user OR administrator
+require_once($pluginConfigFile);
+
+// Set user upload paths
+$useruploadfolder = $foldershistory[count($foldershistory) - 1];
+$useruploadpath = "$rootFolder/$useruploadfolder" . ($useruploadfolder !== '' ? '/' : '');
+$userUploadSiteRoot = dirname(dirname(dirname($link)));
+
+
+
+// checking lang value
+if(isset($_COOKIE['sy_lang'])) {
+	$load_lang_code = $_COOKIE['sy_lang'];
+} else if (isset($_GET['langCode'])) {
+	$load_lang_code = $_GET['langCode'];
+} else {
+	$load_lang_code = "en";
+}
+
+// including lang file
+if (!file_exists(__DIR__ . "/lang/$load_lang_code.php")) {
+	$load_lang_code = "en"; //Set default language
+}
+require_once(__DIR__ . "/lang/$load_lang_code.php");

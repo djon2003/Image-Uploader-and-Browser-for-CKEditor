@@ -20,8 +20,13 @@ if ($username == "" and $password == "") {
 }
 
 
-// Including the functions file, don't delete the following row!
-require_once(__DIR__ . '/function.php');
+// Call function upon "f" URL parameter, don't delete the following row!
+if(isset($_GET["f"])){
+	$f = filter_input(INPUT_GET, 'f', FILTER_SANITIZE_STRING);
+	if($f = "loadImages") {
+		loadImages();
+	}
+}
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +35,7 @@ require_once(__DIR__ . '/function.php');
       ondragleave="toggleDropzone('hide')">
 <head>
     
-    <meta charset="utf-8">
+    <META http-equiv=Content-Type content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title><?php echo $imagebrowser1; ?> :: Fujana Solutions</title>
     <meta name="author" content="Moritz Maleck">
@@ -94,9 +99,9 @@ require_once(__DIR__ . '/function.php');
 
 <p class="folderInfo"><?php echo $imagebrowser2; ?> <span id="finalcount"></span> <?php echo $imagebrowser3; ?> - <span id="finalsize"></span>
     <?php if($file_style == "block") { ?>
-        <img title="List" src="img/cd-icon-list.png" class="headerIcon floatRight" onclick="window.location.href = 'pluginconfig.php?file_style=list';">
+        <img title="List" src="img/cd-icon-list.png" class="headerIcon floatRight" onclick="window.location.href = 'plugininit.php?file_style=list';">
     <?php } elseif($file_style == "list") { ?>
-        <img title="Block" src="img/cd-icon-block.png" class="headerIcon floatRight" onclick="window.location.href = 'pluginconfig.php?file_style=block';">
+        <img title="Block" src="img/cd-icon-block.png" class="headerIcon floatRight" onclick="window.location.href = 'plugininit.php?file_style=block';">
         <img title="Quick Edit" id="qEditBtnOpen" src="img/cd-icon-qedit.png" class="headerIcon floatRight" onclick="toogleQEditMode();">
         <img title="Quick Edit" id="qEditBtnDone" src="img/cd-icon-done.png" class="headerIcon floatRight" onclick="toogleQEditMode();">
     <?php } ?>

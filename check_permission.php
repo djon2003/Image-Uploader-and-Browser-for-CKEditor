@@ -20,7 +20,7 @@ if(!$check_permission):
     <html lang="<?=$load_lang_code?>">
     <head>
 
-        <meta charset="utf-8">
+        <META http-equiv=Content-Type content="text/html; charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <title><?php echo $imagebrowser1; ?> :: Fujana Solutions</title>
         <meta name="author" content="Moritz Maleck">

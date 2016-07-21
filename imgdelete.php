@@ -13,7 +13,7 @@ if(!isset($_SESSION['username'])){
 <!DOCTYPE html>
 <html lang="<?=$load_lang_code?>">
 <head>
-    <meta charset="utf-8">
+    <META http-equiv=Content-Type content="text/html; charset=utf-8">
     <title><?php echo $imagebrowser1; ?> :: Delete</title>
     <script src="dist/sweetalert.min.js"></script>
     <link rel="stylesheet" type="text/css" href="dist/sweetalert.css">
@@ -22,8 +22,11 @@ if(!isset($_SESSION['username'])){
 
 <?php
 
+//TODO : This may not support subfolders
 $imgName = filter_input(INPUT_GET, 'img', FILTER_SANITIZE_STRING);
 $imgSrc = $useruploadpath.$imgName;
+
+xdebug_break ();
 
 // ckeck if file exists
 if(file_exists($imgSrc)){
@@ -40,10 +43,10 @@ if(file_exists($imgSrc)){
 			$useruploadpathDirname = $tmpUserUPath['dirname'];
 			if($imgDirname == $useruploadpathDirname){
 				// check if file is an image
-				$a = getimagesize($imgSrc);
-				$image_type = $a[2];
-				if(in_array($image_type , array(IMAGETYPE_GIF , IMAGETYPE_JPEG , IMAGETYPE_PNG , IMAGETYPE_ICO))) {
-					unlink($imgSrc);
+				$a = pathinfo($imgSrc);
+				$image_type = $a['extension'];
+				if(in_array($image_type , $acceptedExtensions)) {
+					$did = unlink($imgSrc);
 					header('Location: ' . $_SERVER['HTTP_REFERER']);
 				} else {
 					echo '

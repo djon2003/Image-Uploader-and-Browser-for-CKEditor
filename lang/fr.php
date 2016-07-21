@@ -4,6 +4,14 @@
 $lang_name = "Français";
 $inappropriateUse = "Utilisation non permise";
 
+$fileUnits = [
+		"TB" => "To",
+		"GB" => "Go",
+		"MB" => "Mo",
+		"KB" => "Ko",
+		"B" => "octects"
+];
+
 $imagebrowser1 = "Explorateur d'images pour CKEditor";
 $imagebrowser2 = "Au total:";
 $imagebrowser3 = "Images";
@@ -67,7 +75,7 @@ $dltimageerrors6 = "Le fichier que vous désirez supprimer n'existe pas. Veuille
 
 $uploadimgerrors1 = "Le fichier n'est pas une image.";
 $uploadimgerrors2 = "Désolé, le fichier existe déjà.";
-$uploadimgerrors3 = "Désolé, le fichier a une taille trop grande.";
+$uploadimgerrors3 = "Désolé, le fichier a une taille trop grande. (Maximum = " . convertFileSize($maxUploadFileSize) . ')';
 $uploadimgerrors4 = "Désolé, uniquement les fichiers JPG, JPEG, PNG & GIF sont acceptés.";
 $uploadimgerrors5 = "Désolé, votre fichier n'a pu être téléversé. N.B.: N'oubliez pas d'octroyer les permissions d'écriture et/ou suppression au dossier choisi pour le téléversement sur votre serveur.";
 $uploadimgerrors6 = "Désolé, il y a eu une erreur lors du téléversement de votre fichier -";

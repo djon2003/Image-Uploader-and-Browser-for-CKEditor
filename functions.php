@@ -1,29 +1,18 @@
 <?php
 // Including the plugin init file, don't delete the following row!
-require_once(__DIR__ . '/plugininit.php');
 
-//Ensure user connected, otherwise fallback on login page
-if(!isset($_SESSION['username'])){
-	require_once(__DIR__ . '/loginindex.php');
-	exit;
-}
-
-
-if(isset($_GET["f"])){
-    $f = filter_input(INPUT_GET, 'f', FILTER_SANITIZE_STRING);
-    if($f = "loadImages") {
-        loadImages();
-    }
-}
-
-function loadImages() {    
+function loadImages() {
+	global $useruploadpath, $useruploadfolder, $userUploadSiteRoot, $rootFolder, 
+		   $file_style, $file_extens, $acceptedExtensions, 
+		   $alerts9, $alerts10;
+	
     if(file_exists($useruploadpath)){
         
-        $filesizefinal = 0;
         $count = 0;
+        $calcsize = 0;
         
         $dir = $useruploadpath;
-        $files = glob("$dir*.{jpg,jpe,jpeg,png,gif,ico}", GLOB_BRACE);
+        $files = glob("$dir*.{" . join(',', $acceptedExtensions) . "}", GLOB_BRACE);
         usort($files, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
         for($i=count($files)-1; $i >= 0; $i--):
             $image = $files[$i];
@@ -33,18 +22,13 @@ function loadImages() {
             $image_basename = $image_pathinfo['basename'];
         
             // image src/url
-            $protocol = !empty($_SERVER['HTTPS']) ? 'https://' : 'http://';
-            $site = $protocol. $_SERVER['SERVER_NAME'] .'/';
-            $image_url = $site.$useruploadfolder."/".$image_basename;
+            $image_url = substr($image, strlen($rootFolder) + 1);
+            $image_url = "$userUploadSiteRoot/$image_url";
         
             $size = getimagesize($image);
             $image_height = $size[0];
             $file_size_byte = filesize($image);
-            $file_size_kilobyte = ($file_size_byte/1024);
-            $file_size_kilobyte_rounded = round($file_size_kilobyte,1);
-            $filesizetemp = $file_size_kilobyte_rounded;
-            $filesizefinal = round($filesizefinal + $filesizetemp) . " KB";
-            $calcsize = round($filesizefinal + $filesizetemp);
+            $calcsize += $file_size_byte;
             $count = ++$count;
             
             if($file_style == "block") { ?>
@@ -55,7 +39,7 @@ function loadImages() {
                     <div class="imgDiv"><img class="fileImg lazy" data-original="<?php echo $image_url; ?>"></div>
                     <p class="fileDescription"><span class="fileMime"><?php echo $image_extension; ?></span> <?php echo $image_filename; ?><?php if($file_extens == "yes"){echo ".$image_extension";} ?></p>
                     <p class="fileTime"><?php echo date ("F d Y H:i", filemtime($image)); ?></p>
-                    <p class="fileTime"><?php echo $filesizetemp; ?> KB</p>
+                    <p class="fileTime"><?=convertFileSize($file_size_byte)?></p>
                 </div>
             <?php } elseif($file_style == "list") { ?>
                 <div class="fullWidthFileDiv"
@@ -70,7 +54,7 @@ function loadImages() {
                     </div>
                     
                     <p class="fullWidthfileTime fullWidthfileMime fullWidthlastChild"><?php echo $image_extension; ?></p>
-                    <p class="fullWidthfileTime"><?php echo $filesizetemp; ?> KB</p>
+                    <p class="fullWidthfileTime"><?=convertFileSize($file_size_byte)?></p>
                     <p class="fullWidthfileTime fullWidth30percent"><?php echo date ("F d Y H:i", filemtime($image)); ?></p>
                 </div>
             <?php }
@@ -80,28 +64,67 @@ function loadImages() {
             echo "<div class='fileDiv' style='display:none;'></div>";
             $calcsize = 0;
         }
-        if($calcsize == 0){
-            $filesizefinal = "0 KB";
-        }
-        if($calcsize >= 1024){
-            $filesizefinal = round($filesizefinal/1024,1) . " MB";
-        }
+        
+        $finalFileSize = convertFileSize($calcsize);
         
         echo "
         <script>
-            $( '#finalsize' ).html('$filesizefinal');
+            $( '#finalsize' ).html('$finalFileSize');
             $( '#finalcount' ).html('$count');
         </script>
         ";
     } else {
-        echo '<div id="folderError">'.$alerts9.' <b>'.$useruploadfolder.'</b> '.$alerts10;
+        echo '<div id="folderError">'.$alerts9.' <b>'.$useruploadfolder.'</b> '.$alerts10 . '</div>';
     } 
 }
 
 function pathHistory() {
+	global $foldershistory;
+	
     $latestpathes = array_slice($foldershistory, -3);
     $latestpathes = array_reverse($latestpathes);
     foreach($latestpathes as $folder) {
         echo '<p class="pathHistory" onclick="useHistoryPath(\''.$folder.'\');">'.$folder.'</p>';
     }
+}
+
+//FROM : http://php.net/manual/fr/function.filesize.php#112996
+function convertFileSize($bytes)
+{
+	global $fileUnits;
+	$bytes = floatval($bytes);
+	$arBytes = array(
+			0 => array(
+					"UNIT" => $fileUnits["TB"],
+					"VALUE" => pow(1024, 4)
+			),
+			1 => array(
+					"UNIT" => $fileUnits["GB"],
+					"VALUE" => pow(1024, 3)
+			),
+			2 => array(
+					"UNIT" => $fileUnits["MB"],
+					"VALUE" => pow(1024, 2)
+			),
+			3 => array(
+					"UNIT" => $fileUnits["KB"],
+					"VALUE" => 1024
+			),
+			4 => array(
+					"UNIT" => $fileUnits["B"],
+					"VALUE" => 1
+			),
+	);
+
+	foreach($arBytes as $arItem)
+	{
+		if($bytes >= $arItem["VALUE"])
+		{
+			$result = $bytes / $arItem["VALUE"];
+			$result = str_replace(".", "," , strval(round($result, 2)))." ".$arItem["UNIT"];
+			break;
+		}
+	}
+	
+	return (!isset($result) ? '0 ' . $arBytes[4]['UNIT'] : $result);
 }

@@ -19,6 +19,6 @@ if(isset($_POST["username"]) or isset($_POST["password"])){
     $fp = fopen($pluginConfigFile, 'a');
     fwrite($fp, $data);
     fclose($fp);
-    header("Location: imgbrowser.php");
+    header("Location: " . $_SERVER['HTTP_REFERER']);
 } 
 
