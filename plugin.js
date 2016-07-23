@@ -4,5 +4,6 @@
 CKEDITOR.plugins.add( 'imageuploader', {
     init: function( editor ) {
         editor.config.filebrowserBrowseUrl = CKEDITOR.getUrl('') + 'plugins/imageuploader/imgbrowser.php';
+        editor.config.filebrowserUploadUrl = CKEDITOR.getUrl('') + 'plugins/imageuploader/imgupload.php';
     }
 });

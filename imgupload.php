@@ -6,27 +6,31 @@
 // Including the plugin init file, don't delete the following row!
 require_once(__DIR__ . '/plugininit.php');
 
+
 //Ensure user connected, otherwise fallback on login page
 if(!isset($_SESSION['username'])){
 	require_once(__DIR__ . '/loginindex.php');
 	exit;
 }
 
+$uploadImagePlugin = isset($_GET["uploadimage"]);
+
 header('content-type: text/html; charset=utf-8');
 
 $info = pathinfo($_FILES["upload"]["name"]);
 $ext = $info['extension'];
 $ext = strtolower($ext);
-if ($generateFileNameOnUpload) {
-	$randomLetters = $rand = substr(md5(microtime()),rand(0,26),6);
-	$imgnumber = count(scandir($useruploadpath));
-	$filename = "$imgnumber$randomLetters.$ext";
+$checkExistance = false;
+if ($generateFileNameOnUpload || $info["filename"] == "image") {
+	//$filename = md5_file($_FILES["upload"]["tmp_name"]) . ".$ext";
+	$filename = sha1_file($_FILES["upload"]["tmp_name"]) . ".$ext";
 } else {
 	$filename = $info["filename"] . ".$ext";
+	$checkExistance = !$uploadImagePlugin;
 }
 
 $target_file = $useruploadpath . $filename;
-$ckfile = $userUploadSiteRoot . $useruploadpath . $filename;
+$ckfile = $userUploadSiteRoot . '/' . $useruploadfolder . '/' . $filename;
 $uploadOk = 1;
 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
 $imageFileType = strtolower($imageFileType);
@@ -34,20 +38,26 @@ $imageFileType = strtolower($imageFileType);
 $errors = [];
 
 /*
-// Removed it has a real image didn't go through
+// Removed it has a real image didn't go through (like SVG)
 
-*/
 
 // Check if image file is a actual image or fake image
 $check = getimagesize($_FILES["upload"]["tmp_name"]);
 if($check === false) {
 	$errors[] = $uploadimgerrors1;
 }
+*/
 
 
+$uploadFile = true;
 // Check if file already exists
 if (file_exists($target_file)) {
-	$errors[] = $uploadimgerrors2;
+	if ($checkExistance) {
+		$errors[] = $uploadimgerrors2;
+	} else {
+		$uploadFile = false;
+		unlink($_FILES["upload"]["tmp_name"]);
+	}
 }
 // Check file size
 if ($maxUploadFileSize != 0 && $_FILES["upload"]["size"] > $maxUploadFileSize) {
@@ -58,28 +68,49 @@ if( array_search($imageFileType, $acceptedExtensions) === false ) {
 	$errors[] = $uploadimgerrors4;
 }
 
+
+
 // If no errors, then upload
-if (count($errors) == 0) {
+if (count($errors) == 0 && $uploadFile) {
     if (move_uploaded_file($_FILES["upload"]["tmp_name"], $target_file)) {
     	chmod($target_file, "0777");
-    	
-        if(isset($_GET['CKEditorFuncNum'])){
-            $CKEditorFuncNum = $_GET['CKEditorFuncNum'];
-            echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$ckfile', '');</script>";
-        }
     } else {
 		$errors[] = $uploadimgerrors6." ".$target_file." ".$uploadimgerrors7;
     }
 }
 
-echo "<script>";
-if (count($errors) != 0) {
-	$alertErrors = $uploadimgerrors5;
-	$alertErrors .= "\\n\\n- " . join('\\n -', $errors);
-	$alertErrors = str_replace("'", "\\'", $alertErrors);
-		
-	echo "alert('$alertErrors');";
+if (!$uploadImagePlugin) {
+	if(isset($_GET['CKEditorFuncNum'])){
+		$CKEditorFuncNum = $_GET['CKEditorFuncNum'];
+		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$ckfile', '');</script>";
+	}
+	echo "<script>";
+	if (count($errors) != 0) {
+		$alertErrors = $uploadimgerrors5;
+		$alertErrors .= "\\n\\n- " . join('\\n -', $errors);
+		$alertErrors = str_replace("'", "\\'", $alertErrors);
+	
+		echo "alert('$alertErrors');";
+	}
+	
+	echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
+	echo "</script>";
+} else {
+	$data = [];
+	if (count($errors) == 0) {
+		$data = [
+			"uploaded" => "1",
+			"fileName" => $filename,
+			"url" => $ckfile
+		];
+	} else {
+		$data = [
+			"uploaded" => "0",
+			"error" => [
+					"message" => join('\\n -', $errors)
+			]
+		];
+	}
+	
+	echo json_encode($data);
 }
-
-echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
-echo "</script>";
