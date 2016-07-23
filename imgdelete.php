@@ -26,8 +26,6 @@ if(!isset($_SESSION['username'])){
 $imgName = filter_input(INPUT_GET, 'img', FILTER_SANITIZE_STRING);
 $imgSrc = $useruploadpath.$imgName;
 
-xdebug_break ();
-
 // ckeck if file exists
 if(file_exists($imgSrc)){
 	// check if file is available to delete
