@@ -24,9 +24,12 @@ function loadImages() {
             // image src/url
             $image_url = substr($image, strlen($rootFolder) + 1);
             $image_url = "$userUploadSiteRoot/$image_url";
-        
-            $size = getimagesize($image);
-            $image_height = $size[0];
+            
+            $size = @getimagesize($image);
+           	$image_height = $size[0];
+            if ($image_height == null)
+            	$image_height = 0; //Not able to get info
+           		
             $file_size_byte = filesize($image);
             $calcsize += $file_size_byte;
             $count = ++$count;
