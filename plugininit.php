@@ -1,5 +1,9 @@
 <?php
 
+session_start();
+
+const SESSION_INITIAL_PAGE_URL = 'CKEditor_ImgUploader_InitialPageUrl';
+
 require_once(__DIR__ . '/functions.php');
 
 //Coming from : http://stackoverflow.com/a/8891890/214898
@@ -15,13 +19,17 @@ function url_origin( $s, $use_forwarded_host = false ) {
 }
 
 if (!isset($_SERVER['REQUEST_URI'])) {
-	$_SERVER['REQUEST_URI'] = substr($_SERVER['PHP_SELF'],1 );
+	$_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
 	if (isset($_SERVER['QUERY_STRING'])) { $_SERVER['REQUEST_URI'].='?'.$_SERVER['QUERY_STRING']; }
 }
 
 // Don't remove the following two rows
 $root = url_origin($_SERVER);
-$link = "$root/$_SERVER[REQUEST_URI]";
+$link = "$root$_SERVER[REQUEST_URI]";
+
+if (!isset($_SESSION[SESSION_INITIAL_PAGE_URL])) {
+	$_SESSION[SESSION_INITIAL_PAGE_URL] = $link;
+}
 
 
 $pluginConfigFile = __DIR__ . '/pluginconfig.php';
@@ -39,8 +47,6 @@ if ($lookingLineIndex !== false) {
 	ftruncate($fp, strlen($configsData));
 }
 fclose($fp);
-
-session_start();
 
 if(isset($_SESSION['username'])){
     

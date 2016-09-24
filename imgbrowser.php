@@ -1,7 +1,5 @@
-<!-- Copyright (c) 2015, Fujana Solutions - Moritz Maleck. All rights reserved. -->
-<!-- For licensing, see LICENSE.md -->
-
 <?php
+/* Copyright (c) 2015, Fujana Solutions - Moritz Maleck. All rights reserved. */
 
 // Including the plugin init file, don't delete the following row!
 require_once(__DIR__ . '/plugininit.php');

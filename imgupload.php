@@ -73,28 +73,31 @@ if( array_search($imageFileType, $acceptedExtensions) === false ) {
 // If no errors, then upload
 if (count($errors) == 0 && $uploadFile) {
     if (move_uploaded_file($_FILES["upload"]["tmp_name"], $target_file)) {
-    	chmod($target_file, "0777");
+    	chmod($target_file, 0777);
     } else {
 		$errors[] = $uploadimgerrors6." ".$target_file." ".$uploadimgerrors7;
     }
 }
 
 if (!$uploadImagePlugin) {
-	if(isset($_GET['CKEditorFuncNum'])){
+	if (isset($_GET['CKEditorFuncNum'])) {
 		$CKEditorFuncNum = $_GET['CKEditorFuncNum'];
 		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$ckfile', '');</script>";
 	}
-	echo "<script>";
-	if (count($errors) != 0) {
+	if (isset($_GET['CKEditorFuncNum']) || count($errors) != 0) {
+		echo "<script type='text/javascript'>";
 		$alertErrors = $uploadimgerrors5;
 		$alertErrors .= "\\n\\n- " . join('\\n -', $errors);
 		$alertErrors = str_replace("'", "\\'", $alertErrors);
 	
 		echo "alert('$alertErrors');";
+		
+		//echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
+		echo "</script>";
 	}
 	
-	echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
-	echo "</script>";
+	header("Location: " . $_SESSION[SESSION_INITIAL_PAGE_URL] . "\n\n");
+	
 } else {
 	$data = [];
 	if (count($errors) == 0) {
