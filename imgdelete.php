@@ -8,23 +8,10 @@ if(!isset($_SESSION['username'])){
 	exit;
 }
 
-?>
-
-<!DOCTYPE html>
-<html lang="<?=$load_lang_code?>">
-<head>
-    <META http-equiv=Content-Type content="text/html; charset=utf-8">
-    <title><?php echo $imagebrowser1; ?> :: Delete</title>
-    <script src="dist/sweetalert.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="dist/sweetalert.css">
-</head>
-<body>
-
-<?php
-
 //TODO : This may not support subfolders
 $imgName = filter_input(INPUT_GET, 'img', FILTER_SANITIZE_STRING);
 $imgSrc = $useruploadpath.$imgName;
+$body = "";
 
 // ckeck if file exists
 if(file_exists($imgSrc)){
@@ -47,7 +34,7 @@ if(file_exists($imgSrc)){
 					$did = unlink($imgSrc);
 					header('Location: ' . $_SERVER['HTTP_REFERER']);
 				} else {
-					echo '
+					$body .= '
                         <script>
                         swal({
                           title: "'.$dltimageerrors1.'",
@@ -62,7 +49,7 @@ if(file_exists($imgSrc)){
                     ';
 				}
 			} else {
-				echo '
+				$body .= '
                     <script>
                     swal({
                       title: "'.$dltimageerrors1.'",
@@ -77,7 +64,7 @@ if(file_exists($imgSrc)){
                 ';
 			}
 		} else {
-			echo '
+			$body .= '
                 <script>
                 swal({
                   title: "'.$dltimageerrors1.'",
@@ -92,7 +79,7 @@ if(file_exists($imgSrc)){
             ';
 		}
 	} else {
-		echo '
+		$body .= '
             <script>
             swal({
               title: "'.$dltimageerrors1.'",
@@ -107,7 +94,7 @@ if(file_exists($imgSrc)){
         ';
 	}
 } else {
-	echo '
+	$body .= '
         <script>
         swal({
           title: "'.$dltimageerrors1.'",
@@ -124,5 +111,15 @@ if(file_exists($imgSrc)){
 
 ?>
 
+<!DOCTYPE html>
+<html lang="<?=$load_lang_code?>">
+<head>
+    <META http-equiv=Content-Type content="text/html; charset=utf-8">
+    <title><?php echo $imagebrowser1; ?> :: Delete</title>
+    <script src="dist/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="dist/sweetalert.css">
+</head>
+<body>
+<?=$body?>
 </body>
 </html>

@@ -92,12 +92,11 @@ if (!$uploadImagePlugin) {
 	
 		echo "alert('$alertErrors');";
 		
-		//echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
+		echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
 		echo "</script>";
+	} else {
+		header("Location: " . $_SESSION[SESSION_INITIAL_PAGE_URL] . "\n\n");
 	}
-	
-	header("Location: " . $_SESSION[SESSION_INITIAL_PAGE_URL] . "\n\n");
-	
 } else {
 	$data = [];
 	if (count($errors) == 0) {
