@@ -82,11 +82,7 @@ if (count($errors) == 0 && $uploadFile) {
 }
 
 if (!$uploadImagePlugin) {
-	if (isset($_GET['CKEditorFuncNum'])) {
-		$CKEditorFuncNum = $_GET['CKEditorFuncNum'];
-		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$ckfile', '');</script>";
-	}
-	if (isset($_GET['CKEditorFuncNum']) || count($errors) != 0) {
+	if (count($errors) != 0) {
 		echo "<script type='text/javascript'>";
 		$alertErrors = $uploadimgerrors5;
 		$alertErrors .= "\\n\\n- " . join('\\n -', $errors);
@@ -96,8 +92,11 @@ if (!$uploadImagePlugin) {
 		
 		echo (!isset($_GET['CKEditorFuncNum']) ? 'history.back();' : '');
 		echo "</script>";
-	} else {
+	} else if (!isset($_GET['CKEditorFuncNum'])) {
 		header("Location: " . $_SESSION[SESSION_INITIAL_PAGE_URL] . "\n\n");
+	} else {
+		$CKEditorFuncNum = $_GET['CKEditorFuncNum'];
+		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($CKEditorFuncNum, '$ckfile', '');</script>";
 	}
 } else {
 	$data = [];
