@@ -188,7 +188,8 @@ $rootFolder = join('/', $rootFolder);
 
 //Set default relative upload dir
 $foldershistory[] = $defaultUploadFolder;
-
+$removingFolderPartForExternal = '';
+$useRelativeImagePath = false;
 
 // including config file : Changed by user OR administrator
 require_once($pluginConfigFile);
@@ -198,6 +199,12 @@ $useruploadfolder = $foldershistory[count($foldershistory) - 1];
 $useruploadpath = "$rootFolder/$useruploadfolder" . ($useruploadfolder !== '' ? '/' : '');
 $userUploadSiteRoot = dirname(dirname(dirname($link)));
 
+//Set final value of $removingFolderPartForExternal
+if ($useRelativeImagePathForExternal == false) {
+	$removingFolderPartForExternal = '';
+} else {
+	$removingFolderPartForExternal = $userUploadSiteRoot . '/' . $removingFolderPartForExternal;
+}
 
 
 // checking lang value

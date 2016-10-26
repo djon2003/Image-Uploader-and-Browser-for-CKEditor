@@ -67,6 +67,10 @@ function useImage(imgSrc) {
 
         return ( match && match.length > 1 ) ? match[ 1 ] : null ;
     }
+    if (removingFolderPartForExternal.length !== 0) {
+    	imgSrc = imgSrc.substring(removingFolderPartForExternal.length);
+    }
+    
     var funcNum = getUrlParam( 'CKEditorFuncNum' );
     window.opener.CKEDITOR.tools.callFunction( funcNum, imgSrc );
     window.close();

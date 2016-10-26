@@ -3,9 +3,11 @@
 
 function loadImages() {
 	global $useruploadpath, $useruploadfolder, $userUploadSiteRoot, $rootFolder, 
-		   $file_style, $file_extens, $acceptedExtensions, 
+		   $file_style, $file_extens, $acceptedExtensions, $removingFolderPartForExternal, 
 		   $alerts9, $alerts10;
 	
+	?><script type="text/javascript">var removingFolderPartForExternal = "<?=$removingFolderPartForExternal?>";</script><?php
+		   
     if(file_exists($useruploadpath)){
         
         $count = 0;

@@ -31,6 +31,8 @@ if ($generateFileNameOnUpload || $info["filename"] == "image") {
 
 $target_file = $useruploadpath . $filename;
 $ckfile = $userUploadSiteRoot . '/' . $useruploadfolder . '/' . $filename;
+$ckfile = substr($ckfile, strlen($removingFolderPartForExternal));
+
 $uploadOk = 1;
 $imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
 $imageFileType = strtolower($imageFileType);
